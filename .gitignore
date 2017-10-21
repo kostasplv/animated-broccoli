@@ -2,6 +2,8 @@
 *.o
 exe
 .settings/
+
 .cproject/
-.project/
+
+.project
 

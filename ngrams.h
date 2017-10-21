@@ -31,12 +31,5 @@ void change_trie(Index*,trie_node* node,char*);
 int binarySearch1(trie_node** a, trie_node* item, int low, int high);
 void heapify(trie_node** arr, int n, int i);
 void heapSort(trie_node** arr, int n);
-char* search(Index*);
-void print_trie(trie_node*,int);
-void children_sort(trie_node **,int);
-
-
-
 
 #endif /* NGRAMS_H_ */
-
