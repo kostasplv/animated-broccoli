@@ -157,48 +157,278 @@ void insert_node(trie_node* node,char* phrase)		//anadromikh sunarthsh gia inser
 	insert_node(node->children[found],str1);	//PHGAINW ANADROMIKA APO TO NODE POU VRISKOMAI STO PAIDI//
 }
 
-int delete_ngram(Index* indx)
+int delete_ngram(Index* indx,char *phrase)
 {
+    char *str=strtok(phrase," ");
+    char *str1=strtok(NULL,"");
+	int found = -1;
+	found=binary_search(str,indx->root,indx->root_num);
+	if(found==-1)
+	{
+        return 0;
+	}
+	else
+	{
+        if(str1==NULL)
+        {
+            if(indx->root[found]->is_final=='Y')
+            {
+                if(indx->root[found]->child_num==0)
+                {
+                    free(indx->root[found]->word);
+                    indx->root[found]->word=NULL;
+					free(indx->root[found]->children);
+					indx->root[found]->children=NULL;
+                    free(indx->root[found]);
+                    indx->root[found]=NULL;
+                    int i;
+                    for(i=found+1;i<indx->root_num;i++)
+                    {
+                        indx->root[i-1]=indx->root[i];
+                        indx->root[i]=NULL;
+                    }
+                    indx->root_num=indx->root_num-1;
+                    return 1;
+                }
+                else
+                {
+                    indx->root[found]->is_final='N';
+                    return 1;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            int chc;
+            chc=delete_node(indx->root[found],str1);
+            if(chc==2)
+            {
+                if(indx->root[found]->is_final=='N')
+                {
+                    if(indx->root[found]->child_num==0)
+                    {
+                        free(indx->root[found]->word);
+                        indx->root[found]->word=NULL;
+						free(indx->root[found]->children);
+						indx->root[found]->children=NULL;
+                        free(indx->root[found]);
+                        indx->root[found]=NULL;
+                        int i;
+                        for(i=found+1;i<indx->root_num;i++)
+                        {
+                            indx->root[i-1]=indx->root[i];
+                            indx->root[i]=NULL;
+                        }
+                        indx->root_num=indx->root_num-1;
+                        return 1;
+                    }
+                    else
+                    {
+                        return 1;
+                    }
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            else if(chc==1)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+	}
 	return 1;
 }
-
+int delete_node(trie_node *node,char *phrase)
+{
+    int found=-1;
+    char *str=strtok(phrase," ");
+    char *str1=strtok(NULL,"");
+    found=binary_search(str,node->children,node->child_num);
+    if(found==-1)
+    {
+        return 0;
+    }
+    else
+    {
+        if(str1==NULL)
+        {
+            if(node->children[found]->is_final=='Y')
+            {
+                if(node->children[found]->child_num==0)
+                {
+                    free(node->children[found]->word);
+                    node->children[found]->word=NULL;
+					free(node->children[found]->children);
+					node->children[found]->children=NULL;
+                    free(node->children[found]);
+                    node->children[found]=NULL;
+                    int i;
+                    for(i=found+1;i<node->child_num;i++)
+                    {
+                        node->children[i-1]=node->children[i];
+                        node->children[i]=NULL;
+                    }
+                    node->child_num=node->child_num-1;
+                    return 2;
+                }
+                else
+                {
+                    node->children[found]->is_final='N';
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            int chc;
+            chc=delete_node(node->children[found],str1);
+            if(chc==2)
+            {
+                if(node->children[found]->is_final=='N')
+                {
+                    if(node->children[found]->child_num==0)
+                    {
+                        free(node->children[found]->word);
+                        node->children[found]->word=NULL;
+						free(node->children[found]->children);
+						node->children[found]->children=NULL;
+                        free(node->children[found]);
+                        node->children[found]=NULL;
+                        int i;
+                        for(i=found+1;i<node->child_num;i++)
+                        {
+                            node->children[i-1]=node->children[i];
+                            node->children[i]=NULL;
+                        }
+                        node->child_num=node->child_num-1;
+                        return 2;
+                    }
+                    else
+                    {
+                        return 1;
+                    }
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            else if(chc==1)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+}
 char* search(Index* indx,char* phrase)
 {
-	int i,flag=0;;
+	int i,flag=0,flag1=0,c=0,c1=0,c2=0;
 	char *first_word ;
 	char *rest_phrase=NULL;
 	char** result=malloc(sizeof(char*));
+	printf("phrase=%s\n",phrase);
 	int string_counter=-1;
-	first_word=strtok(phrase," ");     	//PAIRNOUME THN PRWTH LEKSH THS PHRASHS//
+	//first_word=strtok(phrase," ");     	//PAIRNOUME THN PRWTH LEKSH THS PHRASHS//
+	//rest_phrase = strtok(NULL,"");
 	int found=-1;
+	char *str2=NULL, *subphrase=NULL, *tempString;
+	char *temp;
+	temp=malloc(strlen(phrase)+1);
+	str2=malloc(strlen(phrase)+1);
+	strcpy(temp,phrase);
+	//str2=NULL;
+	int str2_flag=0,temp_flag=0;
 	while(1)
 	{
-		if(rest_phrase==NULL)
+
+		if(str2_flag==0 && temp_flag==0)
 		{
+			first_word=strtok(temp," ");
 			rest_phrase = strtok(NULL,"");			//PAIRNOUME THN UPOLOIPH PHRASH//3
+			strcpy(str2,rest_phrase);
+			temp_flag=1;
 		}
-		if(rest_phrase==NULL && flag==1)	//H PERIPTWSH AUTH AFORA OTAN MAS DINETAI FRASH ME >=2 LEKSEIS.TO FLAG MAS PROSTATEUEI SE PERIPTWSH POU STO QUESTION DOTHEI MONO MIA LEKSH//
+		if(((str2==NULL && str2_flag==0) || (temp==NULL && temp_flag==0)) && flag==1)	//H PERIPTWSH AUTH AFORA OTAN MAS DINETAI FRASH ME >=2 LEKSEIS.TO FLAG MAS PROSTATEUEI SE PERIPTWSH POU STO QUESTION DOTHEI MONO MIA LEKSH//
 		{
+			//printf("flag=%d\nflag=%d\n",temp_flag,str2_flag);
+			if(temp_flag==1)
+			{
+				free(temp);
+			}
+			if(str2_flag==1)
+			{
+				free(str2);
+			}
+			//printf("malloc=%d\nfree1=%d\nfree2=%d\n",c,c1,c2);
 			break;			//H PHRASH TELEIWSE,EPOMENWS KAI H SEARCH//
 		}
-		flag=1;				//AN TO FLAG==1 SHMAINEI OTI EXEI SCANARISTEI ESTW KAI MIA LEKSH APO THN FRASH//
-		char *str2;
-		if(rest_phrase!=NULL)
+		if(((str2!=NULL && str2_flag==0) || (temp!=NULL && temp_flag==0)) && flag==1)
 		{
-			str2=malloc(strlen(rest_phrase)+1);
-			strcpy(str2,rest_phrase);
+			if(str2_flag==1)
+			{
+				free(str2);
+				first_word=strtok(temp," ");
+				rest_phrase = strtok(NULL,"");
+				temp_flag=1;
+				if(rest_phrase!=NULL)
+				{
+					str2=malloc(strlen(rest_phrase)+1);
+					strcpy(str2,rest_phrase);
+					str2_flag=0;
+				}
+				else
+				{
+					str2=NULL;
+					str2_flag=0;
+				}
+			}
+			else if(temp_flag==1)
+			{
+				free(temp);
+				first_word=strtok(str2," ");
+				rest_phrase = strtok(NULL,"");
+				str2_flag=1;
+				if(rest_phrase!=NULL)
+				{
+					temp=malloc(strlen(rest_phrase)+1);
+					strcpy(temp,rest_phrase);
+					temp_flag=0;
+				}
+				else
+				{
+					temp=NULL;
+					temp_flag=0;
+				}
+			}
+			flag1=1;
 		}
+		flag=1;
+		//printf("\nmeta\nfirst=%s\nrest=%s\nstr2=%s\ntemp=%s\n",first_word,rest_phrase,str2,temp);
 		found=-1;
 		found=binary_search(first_word,indx->root,indx->root_num);		//PSAXNOUME NA VROUME AN H EPILEGMENH LEKSH VRISKETAI STO ROOT//
 		if(found==-1)			//AN DEN UPARXEI STO ROOT SUNEXIZOUME STHN EPOMENH//
 		{
-			first_word=strtok(rest_phrase," ");
-			rest_phrase = strtok(NULL,"");
 			continue;
 		}
 		else				//AN UPARXEI STO ROOT H PRWTH LEKSH//
 		{
-			char* subphrase;
 			int flag=0;
 			subphrase=malloc(strlen(first_word)+1);
 			strcpy(subphrase,first_word);
@@ -231,31 +461,40 @@ char* search(Index* indx,char* phrase)
 						strcpy(result[string_counter],subphrase);
 
 					}
+					//printf("result=%s\n",subphrase);
 				}
 			}
-			search_node(indx->root[found],rest_phrase,subphrase,result,&string_counter);			//AN UPARXEI STO ROOT TOTE ANADROMIKA PHGAINOUME STA PAIDIA//
-			first_word=strtok(str2," ");
-			rest_phrase = strtok(NULL,"");
+			//search_node(indx->root[found],rest_phrase,&subphrase,&result,&string_counter);			//AN UPARXEI STO ROOT TOTE ANADROMIKA PHGAINOUME STA PAIDIA//
 			free(subphrase);
+			subphrase=NULL;
 		}
 	}
 	if(string_counter==-1)		//SE PERIPTWSH POU KAMIA LEKSH DEN VRETHEI EPISTREFOUME -1//
 	{
+		free(result);
 		return "-1";
 	}
-	char* ready_phrase=malloc(strlen(result[0]));		//FTIAXNOUME THN LEKSH POU THA STEILW STHN MAIN GIA NA EKTUPWTHEI//
+	char* ready_phrase=malloc(strlen(result[0])+1);		//FTIAXNOUME THN LEKSH POU THA STEILW STHN MAIN GIA NA EKTUPWTHEI//
 	strcpy(ready_phrase,result[0]);
 	for(i=1;i<=string_counter;i++)
 	{
 		ready_phrase=realloc(ready_phrase,strlen(ready_phrase)+strlen(result[i])+2);
 		strcat(ready_phrase,"|");
 		strcat(ready_phrase,result[i]);
+		//if(result[i]==NULL)continue;
+
+	}
+	for(i=0;i<=string_counter;i++)
+	{
 		free(result[i]);
+		result[i]=NULL;
 	}
 	free(result);
+	result=NULL;
+
 	return ready_phrase;
 }
-void search_node(trie_node* node,char* phrase,char* subphrase,char** result,int *length)
+void search_node(trie_node* node,char* phrase,char** subphrase,char*** result,int *length)
 {
 	char *str=strtok(phrase," ");
 	char* str1=strtok(NULL,"");
@@ -264,15 +503,15 @@ void search_node(trie_node* node,char* phrase,char* subphrase,char** result,int 
 	if(found==-1 )return ;			//AN H PRWTH LEKSH THS PHRASHS POU MAS HRTHE DEN VRETHEI STO TRIE EPISTREFOUME PISW//
 	if(found!=-1 && str1==NULL)		//AN VREI THN LEKSH KAI META DEN EXEI ALLH LEKSH EPISHS H ANADROMH TELEIWNEI//
 	{
-		subphrase=realloc(subphrase,strlen(subphrase)+strlen(str)+2); //2= " " +/0 //
-		strcat(subphrase," ");
-		strcat(subphrase,str);
+		*subphrase=realloc(*subphrase,strlen(*subphrase)+strlen(str)+2); //2= " " +/0 //
+		strcat(*subphrase," ");
+		strcat(*subphrase,str);
 		int found1=-1;
 		if(node->children[found]->is_final=='Y')
 		{
 			for(i=0;i<=*length;i++)
 			{
-				if(!strcmp(result[i],subphrase))		//AN H LEKSH POU PROKEITAI NA MPEI EINAI HDH MESA//
+				if(!strcmp((*result)[i],*subphrase))		//AN H LEKSH POU PROKEITAI NA MPEI EINAI HDH MESA//
 				{
 					found1=i;
 					break;
@@ -283,30 +522,30 @@ void search_node(trie_node* node,char* phrase,char* subphrase,char** result,int 
 				if((*length)==-1)		//AUTO SHMAINEI OTI DEN EXEI MPEI AKOMA STRING STON PINAKA//
 				{
 					(*length)++;
-					result[*length]=malloc(strlen(subphrase)+1);
-					strcpy(result[*length],subphrase);
+					(*result)[*length]=malloc(strlen(*subphrase)+1);
+					strcpy((*result)[*length],*subphrase);
 				}
 				else				//EXEI MPEI STRING STON PINAKA ARA PREPEI NA KANOUME REALLOC KAI MALLOC//
 				{
 					(*length)++;
-					result=realloc(result,(*length)*sizeof(char*));
-					result[*length]=malloc(strlen(subphrase)+1);
-					strcpy(result[*length],subphrase);
+					*result=realloc(result,((*length)+1)*sizeof(char*));
+					(*result)[*length]=malloc(strlen(*subphrase)+1);
+					strcpy((*result)[*length],*subphrase);
 				}
 			}
 		}
 	}
 	if(found!=-1 && str1!=NULL)		//AN VREI THN LEKSH KAI META EXEI ALLH LEKSH SUNEXIZOUME STO EPOMENO EPIPEDO THS ANADROMHS MAS//
 	{
-		subphrase=realloc(subphrase,strlen(subphrase)+strlen(str)+2); //2= " " +/0 //
-		strcat(subphrase," ");
-		strcat(subphrase,str);
+		*subphrase=realloc(*subphrase,strlen(*subphrase)+strlen(str)+2); //2= " " +/0 //
+		strcat(*subphrase," ");
+		strcat(*subphrase,str);
 		int found1=-1;
 		if(node->children[found]->is_final=='Y')
 		{
 			for(i=0;i<=*length;i++)
 			{
-				if(!strcmp(result[i],subphrase))		//AN H LEKSH POU PROKEITAI NA MPEI EINAI HDH MESA//
+				if(!strcmp((*result)[i],*subphrase))		//AN H LEKSH POU PROKEITAI NA MPEI EINAI HDH MESA//
 				{
 					found1=i;
 					break;
@@ -317,16 +556,16 @@ void search_node(trie_node* node,char* phrase,char* subphrase,char** result,int 
 				if(*length==-1)		//AUTO SHMAINEI OTI DEN EXEI MPEI AKOMA STRING STON PINAKA//
 				{
 					(*length)++;
-					result[*length]=malloc(strlen(subphrase)+1);
-					strcpy(result[*length],subphrase);
+					(*result)[*length]=malloc(strlen(*subphrase)+1);
+					strcpy((*result)[*length],*subphrase);
 
 				}
 				else				//EXEI MPEI STRING STON PINAKA ARA PREPEI NA KANOUME REALLOC KAI MALLOC//
 				{
 					(*length)++;
-					result=realloc(result,(*length+1)*sizeof(char*));
-					result[*length]=malloc(strlen(subphrase)+1);
-					strcpy(result[*length],subphrase);
+					*result=realloc(result,((*length)+1)*sizeof(char*));
+					(*result)[*length]=malloc(strlen(*subphrase)+1);
+					strcpy((*result)[*length],*subphrase);
 				}
 			}
 		}

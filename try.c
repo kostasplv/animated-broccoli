@@ -1,27 +1,26 @@
 #include <string.h>
 #include <stdio.h>
-
-int main () {
-   char str[80] = "This is - www.tutorialspoint.com - website - asdad - asdaddsa";
-   const char s[2] = "-";
-   char *token;
-   
-   /* get the first token */
-   token = strtok(str, s);
-	printf( " %s\n", token );
-   	token = strtok(NULL, "");
-	printf( " %s\n", token );
-	token = strtok(token, "-");
-	printf( " %s\n", token );
-
-   	token = strtok(NULL, "");
-	printf( " %s\n", token );
-   /* walk through other tokens */
-   /*while( token != NULL ) {
-      printf( " %s\n", token );
-    
-      token = strtok(NULL, s);
-   }*/
+#include <stdlib.h>
+int main ()
+{
+	char* x,*y;
+	char *first_word ;
+	char *rest_phrase=NULL;
+	x=malloc(10*sizeof(char));
+	y=malloc(10*sizeof(char));
+	strcpy(x,"as as ds");
+	first_word=strtok(x," ");
+	rest_phrase=strtok(NULL,"");
+	strcpy(y,rest_phrase);
+	printf("x=%s\ny=%s\nfirt=%s\nrest=%s\n",x,y,first_word,rest_phrase);
+	//free(x);
+	//printf("x=%s\ny=%s\nfirt=%s\nrest=%s\n",x,y,first_word,rest_phrase);
+	first_word=strtok(rest_phrase," ");
+free(x);
+free(y);
+	//strcpy(r,x);
+	//r=&x;
+	//y=x;
    
    return(0);
 }

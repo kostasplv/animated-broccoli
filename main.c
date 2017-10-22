@@ -44,7 +44,11 @@ int main(int argc, char *argv[])
 		int counter=0;
 		char c;
 		c=fgetc(init_f);
-		if(c==EOF) break;
+		if(c==EOF)
+			{
+			free(phrase);
+			break;
+			}
 		//printf("2.%d\n",cnt);
 		while(c!=EOF && c!='\n')
 		{
@@ -85,7 +89,11 @@ int main(int argc, char *argv[])
 		int counter=0;
 		char c;
 		c=fgetc(query_f);
-		if(c==EOF) break;
+		if(c==EOF)
+		{
+			free(qphrase);
+			break;
+		}
 		while(c!=EOF && c!='\n')
 		{
 			if(counter==phrase_size)
@@ -120,11 +128,18 @@ int main(int argc, char *argv[])
 
         if(!strcmp(command,"A"))
         {
-           insert_ngram(Trie,topass);
+          // insert_ngram(Trie,topass);
         }
         else if(!strcmp(command,"D"))
         {
-
+            if(delete_ngram(Trie,topass)==1)
+            {
+               // printf("successful\n");
+            }
+            else
+            {
+               // printf("not successful\n");
+            }
         }
         else if(!strcmp(command,"F"))
         {
@@ -132,12 +147,18 @@ int main(int argc, char *argv[])
         }
         else if(!strcmp(command,"Q"))
         {
-        	char* result;
-
-        	if(flag==0)strcpy(result,"-1");					//Q ME KENO PHRASE//
-        	else result=search(Trie,topass);				//Q ME MH KENO PHRASE//
+        	char* result=NULL;
+        //	if(flag==0)strcpy(result,"-1");					//Q ME KENO PHRASE//
+        	//else
+        	{
+        		result=search(Trie,topass);					//Q ME MH KENO PHRASE//
+            	printf("result=%s\n",result);
+            	if(strcmp(result,"-1"))
+            		if(result!=NULL)
+            			free(result);
+        	}
         	flag=0;
-        	printf("result=%s\n",result);
+        	//free(result);
         }
         else
         {
@@ -151,4 +172,10 @@ int main(int argc, char *argv[])
 		qphrase=NULL;
 		if(c==EOF) break;
 	}
+	fclose(init_f);
+	fclose(query_f);
+	free(query_file);
+	free(init_file);
+
+
 }

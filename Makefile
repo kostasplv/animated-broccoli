@@ -1,5 +1,5 @@
 CC		= gcc
-FLAGS	= -c
+FLAGS	= -c -g
 COMP = -o
 OUT = exe
 IN = main.o ngrams.o
