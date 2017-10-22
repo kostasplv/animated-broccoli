@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 int main(int argc, char *argv[])
 {
 	clock_t begin = clock();
@@ -82,6 +83,7 @@ int main(int argc, char *argv[])
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 	printf("time  %f\n",time_spent);
 	printf("Telos insert\n");
+	FILE* f=fopen("hello.txt","w+");
 	while(1)
 	{
 		int phrase_size=20;
@@ -152,7 +154,9 @@ int main(int argc, char *argv[])
         	//else
         	{
         		result=search(Trie,topass);					//Q ME MH KENO PHRASE//
-            	printf("result=%s\n",result);
+            	//printf("result=%s\n",result);
+
+            	fprintf(f,"%s\n",result);
             	if(strcmp(result,"-1"))
             		if(result!=NULL)
             			free(result);
@@ -176,6 +180,13 @@ int main(int argc, char *argv[])
 	fclose(query_f);
 	free(query_file);
 	free(init_file);
-
-
+	/*for(i=0;i<Trie->root_num;i++)		//PRINT VOITHITIKH GIA EMAS//
+	{
+        if(Trie->root[i]->is_final=='Y')
+            printf("%s1\n",Trie->root[i]->word);
+        else
+            printf("%s\n",Trie->root[i]->word);
+		print_trie(Trie->root[i],0);
+    }*/
+    delete_trie(&Trie);
 }

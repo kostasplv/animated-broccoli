@@ -3,6 +3,7 @@
 #include <string.h>
 #include "ngrams.h"
 #include <time.h>
+
 Index* init_trie()
 {
 	Index *trie;
@@ -607,6 +608,40 @@ void search_node(trie_node* node,char* phrase,char** subphrase,char*** result,in
 		//printf("2edw\n");
 	}
 	//printf("1edw\n");
+}
+void delete_trie(Index **indx)
+{
+    int i;
+    for(i=0;i<(*indx)->root_num;i++)
+    {
+        delete_helper((*indx)->root[i]);
+        free((*indx)->root[i]->word);
+        (*indx)->root[i]->word=NULL;
+        free((*indx)->root[i]->children);
+        (*indx)->root[i]->children=NULL;
+        free((*indx)->root[i]);
+        (*indx)->root[i]=NULL;
+    }
+    free((*indx)->root);
+    (*indx)->root=NULL;
+    free((*indx));
+    (*indx)=NULL;
+}
+
+void delete_helper(trie_node *node)
+{
+    if(!node->child_num) return;
+    int i;
+    for(i=0;i<node->child_num;i++)
+    {
+        delete_helper(node->children[i]);
+        free(node->children[i]->word);
+        node->children[i]->word=NULL;
+        free(node->children[i]->children);
+        node->children[i]->children=NULL;
+        free(node->children[i]);
+        node->children[i]=NULL;
+    }
 }
 void heapSort(trie_node** arr, int n)
 {
