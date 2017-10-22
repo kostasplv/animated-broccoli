@@ -128,11 +128,11 @@ int main(int argc, char *argv[])
 
         if(!strcmp(command,"A"))
         {
-          // insert_ngram(Trie,topass);
+           insert_ngram(Trie,topass);
         }
         else if(!strcmp(command,"D"))
         {
-            if(delete_ngram(Trie,topass)==1)
+           if(delete_ngram(Trie,topass)==1)
             {
                // printf("successful\n");
             }
