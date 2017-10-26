@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
 	clock_t begin = clock();
-	int i,j;
+	int i;
 	Index *Trie;
 	Trie=init_trie();
 	char* init_file,*query_file,*phrase;
