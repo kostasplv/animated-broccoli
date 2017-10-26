@@ -34,4 +34,6 @@ void heapify(trie_node** arr, int n, int i);
 void heapSort(trie_node** arr, int n);
 void delete_trie(Index **);
 void delete_helper(trie_node *);
+int BinaryInsertionSort (trie_node** a, int n);
+int BinarySearch (trie_node** a, int low, int high, char* key);
 #endif /* NGRAMS_H_ */

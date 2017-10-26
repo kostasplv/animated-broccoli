@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 		}
 		phrase[counter]='\0';
 		cnt++;
-		//printf("%d\n",cnt);
+		printf("%d\n",cnt);
 		//printf("phrase=%s\n",phrase);
 		insert_ngram(Trie,phrase);
 
@@ -179,6 +179,7 @@ int main(int argc, char *argv[])
 	fclose(init_f);
 	fclose(query_f);
 	free(query_file);
+	fclose(f);
 	free(init_file);
 	/*for(i=0;i<Trie->root_num;i++)		//PRINT VOITHITIKH GIA EMAS//
 	{

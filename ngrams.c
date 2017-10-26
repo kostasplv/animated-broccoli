@@ -86,13 +86,26 @@ int insert_ngram(Index *indx, char *phrase)
 		{
 			indx->root[indx->root_num - 1]->is_final = 'Y';
 			insertionSort(indx->root,indx->root_num);
+			//BinaryInsertionSort(indx->root,indx->root_num);
 			//heapSort(indx->root,indx->root_num);
 			return 1;
 		}
         int found=-1;
+    	//clock_t begin = clock();
+        //found=BinaryInsertionSort(indx->root,indx->root_num);
+        //printf("found=%d\n",found);
+    	//clock_t end = clock();
+    	//double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    	//printf("\n22Binary insertion time  %f\n",time_spent);
+    	//begin = clock();
         found=insertionSort(indx->root,indx->root_num);
+       // end = clock();
+       // time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    	//printf("insertion time  %f\n",time_spent);
+       // printf("\nfound=%d\n",found);
        // heapSort(indx->root,indx->root_num);
-        found=binary_search(str,indx->root,indx->root_num);
+       // found=binary_search(str,indx->root,indx->root_num);
+       // printf("found=%d\n",found);
 		insert_node(indx->root[found],str1);
 
 		/*clock_t end = clock();
@@ -119,7 +132,6 @@ int insert_ngram(Index *indx, char *phrase)
 		print_trie(indx->root[i],0);
     }*/
 }
-
 void insert_node(trie_node* node,char* phrase)		//anadromikh sunarthsh gia insert
 {
 	int i;
@@ -152,13 +164,18 @@ void insert_node(trie_node* node,char* phrase)		//anadromikh sunarthsh gia inser
 	{
         node->children[node->child_num-1]->is_final='Y';
         insertionSort(node->children,node->child_num);
+        //BinaryInsertionSort(node->children,node->child_num);
 		return ;
 	}
-	insertionSort(node->children,node->child_num);
-    int found=binary_search(str,node->children,node->child_num);
+
+    int found=-1;
+	found=insertionSort(node->children,node->child_num);
+	found=binary_search(str,node->children,node->child_num);
+	//printf("\ninsertion time  %f\n",time_spent);
+	//found=binary_search(str,node->children,node->child_num);
+	//printf("found=%d\n",found);
 	insert_node(node->children[found],str1);	//PHGAINW ANADROMIKA APO TO NODE POU VRISKOMAI STO PAIDI//
 }
-
 int delete_ngram(Index* indx,char *phrase)
 {
     char *str=strtok(phrase," ");
@@ -627,7 +644,6 @@ void delete_trie(Index **indx)
     free((*indx));
     (*indx)=NULL;
 }
-
 void delete_helper(trie_node *node)
 {
     if(!node->child_num) return;
@@ -793,6 +809,72 @@ int insertionSort1(trie_node** a, int n)
   //  printf("location=%d---j=%d\n",loc,j);
     return loc;
 }
+int BinaryInsertionSort (trie_node** a, int n)
+{
+    register int i, m;
+    int hi, lo;
+    trie_node* tmp;
+
+    for (i = 1; i < n; i++)
+    {
+        lo = 0, hi = i;
+        m = i / 2;
+
+        do {
+            if ((strcmp(a[i]->word , a[m]->word))>0)
+            {
+                lo = m + 1;
+            } else if ((strcmp(a[i]->word , a[m]->word))<0) {
+                hi = m;
+            } else
+                break;
+
+            m = lo + ((hi - lo) / 2);
+        } while (lo < hi);
+
+        if (m < i) {
+            tmp = a[i];
+            memmove (a + m + 1, a + m, sizeof (trie_node*) * (i - m));
+            a[m] = tmp;
+        }
+    }
+    if(i-2<0)return 0;
+    return i-2;
+    printf("found=%d--%d--%d--%d\n",m,i,lo,hi);
+}
+/*int BinarySearch (trie_node** a, int low, int high, char* key)
+{
+    int mid;
+
+    if (low == high)
+        return low;
+
+    mid = low + ((high - low) / 2);
+
+    if (strcmp(key , a[mid]->word)>0)
+        return BinarySearch (a, mid + 1, high, key);
+    else if (strcmp(key , a[mid]->word)<0)
+        return BinarySearch (a, low, mid, key);
+
+    return mid;
+}
+int BinaryInsertionSort (trie_node** a, int n)
+{
+    int ins, i, j;
+    trie_node* tmp;
+
+    for (i = 1; i < n; i++) {
+        ins = BinarySearch (a, 0, i, a[i]->word);
+        if (ins < i) {
+            tmp = a[i];
+            for (j = i - 1; j >= ins; j--)
+                a[j + 1] = a[j];
+            a[ins] = tmp;
+        }
+    }
+
+    return i-2;
+}*/
 int binarySearch1(trie_node** a, trie_node* item, int low, int high)
 {
     if (high <= low)
