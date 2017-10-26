@@ -178,6 +178,7 @@ void insert_node(trie_node* node,char* phrase)		//anadromikh sunarthsh gia inser
 }
 int delete_ngram(Index* indx,char *phrase)
 {
+    //printf("i am here4\n");
     char *str=strtok(phrase," ");
     char *str1=strtok(NULL,"");
 	int found = -1;
@@ -267,7 +268,139 @@ int delete_ngram(Index* indx,char *phrase)
 	}
 	return 1;
 }
+
 int delete_node(trie_node *node,char *phrase)
+{
+    //printf("i am here3\n");
+    int counter=0;
+    int size=20;
+    trie_node **temp;
+    int *where;
+    temp=malloc(size*sizeof(trie_node *));
+    where=malloc(size*sizeof(int));
+    int found=-1;
+    char *str=strtok(phrase," ");
+    int flag=3;
+    //printf("i am here2\n");
+    while(1)
+    {
+        if(str==NULL) break;
+        found=binary_search(str,node->children,node->child_num);
+        if(found==-1)
+        {
+            free(temp);
+            temp=NULL;
+            free(where);
+            where=NULL;
+            return 0;
+        }
+        //printf("i am here\n");
+        counter++;
+        if(counter>size)
+        {
+            size*=2;
+            temp=realloc(temp,size*sizeof(trie_node *));
+            where=realloc(where,size*sizeof(int));
+        }
+        temp[counter-1]=node;
+        where[counter-1]=found;
+        str=strtok(NULL," ");
+        node=node->children[found];
+    }
+    int i;
+    //printf("1.....1\n");
+    for(i=counter-1;i>=0;i--)
+    {
+        if(flag==3)
+        {
+            if(temp[i]->children[where[i]]->is_final=='Y')
+            {
+                if(temp[i]->children[where[i]]->child_num==0)
+                {
+                    free(temp[i]->children[where[i]]->word);
+                    temp[i]->children[where[i]]->word=NULL;
+					free(temp[i]->children[where[i]]->children);
+					temp[i]->children[where[i]]->children=NULL;
+                    free(temp[i]->children[where[i]]);
+                    temp[i]->children[where[i]]=NULL;
+                    int j;
+                    for(j=where[i]+1;j<temp[i]->child_num;j++)
+                    {
+                        temp[i]->children[j-1]=temp[i]->children[j];
+                        temp[i]->children[j]=NULL;
+                    }
+                    temp[i]->child_num=temp[i]->child_num-1;
+                }
+                else
+                {
+                    temp[i]->children[where[i]]->is_final='N';
+                    flag--;
+                }
+            }
+            else
+            {
+                free(temp);
+                temp=NULL;
+                free(where);
+                where=NULL;
+                return 0;
+            }
+            flag--;
+        }
+        else if(flag==2)
+        {
+            if(temp[i]->children[where[i]]->is_final=='N')
+            {
+                if(temp[i]->children[where[i]]->child_num==0)
+                {
+                    free(temp[i]->children[where[i]]->word);
+                    temp[i]->children[where[i]]->word=NULL;
+					free(temp[i]->children[where[i]]->children);
+					temp[i]->children[where[i]]->children=NULL;
+                    free(temp[i]->children[where[i]]);
+                    temp[i]->children[where[i]]=NULL;
+                    int j;
+                    for(j=where[i]+1;j<temp[i]->child_num;j++)
+                    {
+                        temp[i]->children[j-1]=temp[i]->children[j];
+                        temp[i]->children[j]=NULL;
+                    }
+                    temp[i]->child_num=temp[i]->child_num-1;
+                }
+                else
+                {
+                    flag--;
+                }
+            }
+            else
+            {
+                flag--;
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+    if(flag==1)
+    {
+        free(temp);
+        temp=NULL;
+        free(where);
+        where=NULL;
+        return 1;
+    }
+    else
+    {
+        free(temp);
+        temp=NULL;
+        free(where);
+        where=NULL;
+        return 2;
+    }
+}
+
+/*int delete_node(trie_node *node,char *phrase)
 {
     int found=-1;
     char *str=strtok(phrase," ");
@@ -355,7 +488,7 @@ int delete_node(trie_node *node,char *phrase)
             }
         }
     }
-}
+}*/
 char* search(Index* indx,char* phrase)
 {
 	int i,flag=0,flag1=0,c=0,c1=0,c2=0;
