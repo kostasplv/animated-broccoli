@@ -10,33 +10,51 @@ int main(int argc, char *argv[])
 	int j,i;
 	Index *Trie;
 	Trie=init_trie();
-	char* init_file,*query_file,*phrase;
+	char *phrase;
 	FILE* init_f,*query_f;
-	for(i=0;i<argc;i++)
-	{
-		if(!strcmp(argv[i],"-i"))
-		{
-			init_file=malloc((strlen(argv[i+1]))*sizeof(char)+1);
-			if(init_file==NULL)
-			{
-				perror("malloc");
-				exit(1);
-			}
-			strcpy(init_file,argv[i+1]);
-		}
-		if(!strcmp(argv[i],"-q"))
-		{
-			query_file=malloc((strlen(argv[i+1]))*sizeof(char)+1);
-			if(query_file==NULL)
-			{
-				perror("malloc");
-				exit(1);
-			}
-			strcpy(query_file,argv[i+1]);
-		}
-	}
-	init_f=fopen(init_file,"r");
-	query_f=fopen(query_file,"r");
+	int icheck;
+	int qcheck;
+	icheck=0;
+	qcheck=0;
+    if(argc!=5)
+    {
+        printf("wrong number of arguements\n");
+        return -1;
+    }
+    else
+    {
+        for(i=1;i<argc;i=i+2)/*gets the arguements from command line*/
+        {
+            if(!strcmp(argv[i],"-i"))
+            {
+                init_f=fopen(argv[i+1],"r");
+                if(init_f==NULL)
+                {
+                    printf("error opening initialisation file\n");
+                    return -1;
+                }
+                printf("init_f %s\n",argv[i+1]);
+                icheck=1;
+            }
+            else if(!strcmp(argv[i],"-q"))
+            {
+                query_f=fopen(argv[i+1],"r");
+                if(query_f==NULL)
+                {
+                    printf("error opening query file\n");
+                    return -1;
+                }
+                printf("query_f %s\n",argv[i+1]);
+                qcheck=1;
+            }
+        }
+
+    }
+    if(icheck==0 || qcheck==0)
+    {
+        printf("wrong arguements\n");
+        return -1;
+    }
 	int cnt=0;
 	while(1)
 	{
@@ -128,11 +146,11 @@ int main(int argc, char *argv[])
         char *command=malloc(strlen(str)+1);
         strcpy(command,str);
 
-        if(!strcmp(command,"A"))
+        if(!strcmp(command,"A")) //entoli gia prosthesi n-gram sto trie
         {
            insert_ngram(Trie,topass);
         }
-        else if(!strcmp(command,"D"))
+        else if(!strcmp(command,"D")) //entoli gia diagrafi n-gram apo to trie
         {
            if(delete_ngram(Trie,topass)==1)
             {
@@ -147,7 +165,7 @@ int main(int argc, char *argv[])
         {
 
         }
-        else if(!strcmp(command,"Q"))
+        else if(!strcmp(command,"Q")) //entoli gia anazitisi engrams se dosmeni frasi
         {
         	char* result=NULL;
         //	if(flag==0)strcpy(result,"-1");					//Q ME KENO PHRASE//
@@ -178,9 +196,7 @@ int main(int argc, char *argv[])
 	}
 	fclose(init_f);
 	fclose(query_f);
-	free(query_file);
 	fclose(f);
-	free(init_file);
 	/*for(i=0;i<Trie->root_num;i++)		//PRINT VOITHITIKH GIA EMAS//
 	{
         if(Trie->root[i]->is_final=='Y')
