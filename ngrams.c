@@ -138,23 +138,23 @@ void insert_node(trie_node* node,char* phrase)		//anadromikh sunarthsh gia inser
 	found=binary_search(str,node->children,node->child_num);
 	insert_node(node->children[found],str1);	//PHGAINOUME ANADROMIKA APO TO NODE POU VRISKOMASTE STO PAIDI//
 }
-int delete_ngram(Index* indx,char *phrase)
+int delete_ngram(Index* indx,char *phrase)// DAIGRADFEI ENA N-GRAM APO TO TRIE
 {
-    char *str=strtok(phrase," ");
-    char *str1=strtok(NULL,"");
+    char *str=strtok(phrase," ");//PAIRNEI THN PRWTH LEKSH TOY N-GRAM
+    char *str1=strtok(NULL,"");//EINAI TO YPOLOIPO N-GRAM XORIS THN PRWTH LEKSH
 	int found = -1;
-	found=binary_search(str,indx->root,indx->root_num);
+	found=binary_search(str,indx->root,indx->root_num);//PSAXNOYME THN PRWTH LEKSH STO ROOT AN DEN YPARXEI EPISTREFEI MHDEN
 	if(found==-1)
 	{
         return 0;
 	}
 	else
 	{
-        if(str1==NULL)
+        if(str1==NULL)//AN TO N-GRAM EINAI MONO MIA LEKSH
         {
-            if(indx->root[found]->is_final=='Y')
+            if(indx->root[found]->is_final=='Y')//KOITAME AN EINAI TELIKOS KOMVOS
             {
-                if(indx->root[found]->child_num==0)
+                if(indx->root[found]->child_num==0)//AN DEN EXEI PAIDIA TOTE APLA TON DIAGRAFEI
                 {
                     free(indx->root[found]->word);
                     indx->root[found]->word=NULL;
@@ -171,26 +171,26 @@ int delete_ngram(Index* indx,char *phrase)
                     indx->root_num=indx->root_num-1;
                     return 1;
                 }
-                else
+                else//AN EXEI PAIDIA APLA TON KANEI TO TELIKO KOMVO MH TELIKO
                 {
                     indx->root[found]->is_final='N';
                     return 1;
                 }
             }
-            else
+            else//AN DEN EINAI TELIKOS KOMVOS TOTE DEN YPARXEI TO N-GRAM KAI EPISTREFEI MHDEN
             {
                 return 0;
             }
         }
-        else
+        else//AN TO N-GRAM DEN HTAN MONO MIA LEKSI TOTE KALOYME GIA TO YPOLOIPO STRING THN VOHTHITIKH SYNARTHSH delete_node
         {
             int chc;
             chc=delete_node(indx->root[found],str1);
-            if(chc==2)
+            if(chc==2)//AN AYTI EPISTREPSEI 2 SHMAINEI OTI DIEGRAPSE TOYS KOMVOYS TWN ALLWN LEKSEWN ARA THA KOITAKSOYME NA DOYME AN MPOROYME NA DIAGRAPSOYME TON KOMVO THS PRWTHS LEKSHS
             {
-                if(indx->root[found]->is_final=='N')
+                if(indx->root[found]->is_final=='N')//AN EINAI MH TELIKOS O KOMVOS THS PRWTHS LEKSHS
                 {
-                    if(indx->root[found]->child_num==0)
+                    if(indx->root[found]->child_num==0)//AN DEN EXEI PAIDIA TOTE TON DIAGRAFOYME
                     {
                         free(indx->root[found]->word);
                         indx->root[found]->word=NULL;
@@ -207,7 +207,7 @@ int delete_ngram(Index* indx,char *phrase)
                         indx->root_num=indx->root_num-1;
                         return 1;
                     }
-                    else
+                    else//AN APISTREPSEI 1 SHMAINEI OTI DEN MPORESE NA DIAGRAPSEI OLOYS TOY KOMVOYS TWN ALLWN LEKSEWN ARA APLA EPISTREFEI POS EGINE EPITYXWN H DIAGRAFH
                     {
                         return 1;
                     }
@@ -217,11 +217,11 @@ int delete_ngram(Index* indx,char *phrase)
                     return 1;
                 }
             }
-            else if(chc==1)
+            else if(chc==1)//AN EPISTREPSEI 1 SHMAINEI PWS DEN MPORESE NA DIAGRAPSEI TOYS KOMVOYS TWN EPOMENWN LEKSEWN ARA EPISTREFEI PWS EGINE EPITYXWS H DIAGRAFH
             {
                 return 1;
             }
-            else
+            else//AN EPISTREPSEI MHDEN TOTE SHMAINEI OTI DEB VRIKE TO N-GRAM ARA EPISTREFEI LATHOS
             {
                 return 0;
             }
@@ -229,18 +229,18 @@ int delete_ngram(Index* indx,char *phrase)
 	}
 	return 1;
 }
-int delete_node(trie_node *node,char *phrase)
+int delete_node(trie_node *node,char *phrase)//VOHTHITIKH SYNARTHSH THS delete_ngram
 {
     int counter=0;
     int size=20;
     trie_node **temp;
     int *where;
-    temp=malloc(size*sizeof(trie_node *));
-    where=malloc(size*sizeof(int));
+    temp=malloc(size*sizeof(trie_node *));//SE AYTON TON PINAKA KRATAME TIS DIEYTHYNSEIS TWN trie_nodes POY EXOYN WS PAIDIA TIS LEKSEIS POY PSAXNOYME
+    where=malloc(size*sizeof(int));//KAI SE AYTON KRATAME THN THESH MESA STON PINAKA children TWN trie_nodes OPOY EINAI OI LEKSEIS
     int found=-1;
     char *str=strtok(phrase," ");
     int flag=3;
-    while(1)
+    while(1)//EDV APLA GEMIZOYME TOYS PARAPANW PINAKES
     {
         if(str==NULL) break;
         found=binary_search(str,node->children,node->child_num);
@@ -265,13 +265,13 @@ int delete_node(trie_node *node,char *phrase)
         node=node->children[found];
     }
     int i;
-    for(i=counter-1;i>=0;i--)
+    for(i=counter-1;i>=0;i--)//KAI EDV APO THN TELEYTAIA LEKSH TOY N-GRAM KAI PROS TA PISW KSEKINAME THN DIADIKASIA THS DIAGRAFIS
     {
-        if(flag==3)
+        if(flag==3)//H PRWTH LEKSH POY THA DIAGRAPSOYME
         {
-            if(temp[i]->children[where[i]]->is_final=='Y')
+            if(temp[i]->children[where[i]]->is_final=='Y')//AN EINAI TELIKOS KOMVOS
             {
-                if(temp[i]->children[where[i]]->child_num==0)
+                if(temp[i]->children[where[i]]->child_num==0)//AN DEN EXEI PAIDIA TON DIAGRAFOYME
                 {
                     free(temp[i]->children[where[i]]->word);
                     temp[i]->children[where[i]]->word=NULL;
@@ -287,13 +287,13 @@ int delete_node(trie_node *node,char *phrase)
                     }
                     temp[i]->child_num=temp[i]->child_num-1;
                 }
-                else
+                else//AN EXEI APLA TON KANOYME MH TELIKO
                 {
                     temp[i]->children[where[i]]->is_final='N';
                     flag--;
                 }
             }
-            else
+            else//AN DEN EINAI TELIKOS LATHOS
             {
                 free(temp);
                 temp=NULL;
@@ -303,11 +303,11 @@ int delete_node(trie_node *node,char *phrase)
             }
             flag--;
         }
-        else if(flag==2)
+        else if(flag==2)//AN DIAGRAPSAME TON KOMVO THS PROHGOYMENHS LEKSHS KOITAME THS EPOMENHS KAI KOITAME NA DOYME AN MPROYME NA TON DIAGRAPSOYME
         {
-            if(temp[i]->children[where[i]]->is_final=='N')
+            if(temp[i]->children[where[i]]->is_final=='N')//AN DEN EINAI TELIKOS KOMVOS
             {
-                if(temp[i]->children[where[i]]->child_num==0)
+                if(temp[i]->children[where[i]]->child_num==0)//AN DEN EXEI PAIDIA TON DIAGRAFOYME
                 {
                     free(temp[i]->children[where[i]]->word);
                     temp[i]->children[where[i]]->word=NULL;
@@ -323,7 +323,7 @@ int delete_node(trie_node *node,char *phrase)
                     }
                     temp[i]->child_num=temp[i]->child_num-1;
                 }
-                else
+                else//AN EXEI DEN KANOYME TIPOTA
                 {
                     flag--;
                 }
