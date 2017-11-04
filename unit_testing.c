@@ -41,7 +41,7 @@ int clean_suite1(void)
  * Writes test data to the temporary file and checks
  * whether the expected number of bytes were written.
  */
-void testInsert(void)
+void testSearch(void)
 {
 	Index *Trie;
 	Trie=init_trie();
@@ -96,6 +96,23 @@ void testInsert(void)
  * and checks whether the expected characters are present.
  * Must be run after testFPRINTF().
  */
+void testInsert(void)
+{
+	unsigned char buffer[20];
+	Index *Trie;
+	Trie=init_trie();
+	char *phrase=malloc(100*sizeof(char));
+	if (NULL != temp_file)
+	{
+		rewind(temp_file);
+		CU_ASSERT(0==strcmp(search(Trie,""),"-1"));
+		CU_ASSERT(0==strcmp(search(Trie," "),"-1"));
+		CU_ASSERT(0==strcmp(search(Trie,"this dsad ads"),"-1"));
+      //YOUR CODE HERE//
+
+      //YOUR CODE HERE//
+	}
+}
 void testDelete(void)
 {
    unsigned char buffer[20];
@@ -131,7 +148,7 @@ int main()
 
    /* add the tests to the suite */
    /* NOTE - ORDER IS IMPORTANT - MUST TEST fread() AFTER fprintf() */
-   if ((NULL == CU_add_test(pSuite, "test of Insert()", testInsert)) ||(NULL == CU_add_test(pSuite, "test of delete()", testDelete)))
+   if ((NULL == CU_add_test(pSuite, "test of Search()", testSearch)) ||(NULL == CU_add_test(pSuite, "test of delete()", testDelete))||(NULL == CU_add_test(pSuite, "test of Insert()", testInsert)))
    {
       CU_cleanup_registry();
       return CU_get_error();
