@@ -83,6 +83,11 @@ void testInsert(void)
 	   insert_ngram(Trie,phrase);
 	   CU_ASSERT(0==strcmp(search(Trie,"is a"),"is"));
 	   CU_ASSERT(0==strcmp(search(Trie,"this is a dog and this is a ball"),"this|this is a dog|is|is a dog|is a dog and|this is a ball"));
+	   strcpy(phrase,"a");
+	   insert_ngram(Trie,phrase);
+	   CU_ASSERT(0==strcmp(search(Trie,"is a"),"is|a"));
+	   CU_ASSERT(0==strcmp(search(Trie,"a"),"a"));
+	   CU_ASSERT(0==strcmp(search(Trie,"this is a this is a"),"this|is|a"));
    }
 }
 
