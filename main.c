@@ -4,7 +4,7 @@
 #include <string.h>
 #include <time.h>
 
-int main1(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int j,i;
 	Index *Trie;
@@ -135,7 +135,7 @@ int main1(int argc, char *argv[])
         }
         else if(!strcmp(command,"D")) //entoli gia diagrafi n-gram apo to trie
         {
-           if(delete_ngram(Trie,topass)!=1)
+        	if(delete_ngram(Trie,topass)!=1)
             {
                 printf("Error in delete\n");
             }
