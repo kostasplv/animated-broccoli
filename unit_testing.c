@@ -108,9 +108,27 @@ void testInsert(void)
 		CU_ASSERT(0==strcmp(search(Trie,""),"-1"));
 		CU_ASSERT(0==strcmp(search(Trie," "),"-1"));
 		CU_ASSERT(0==strcmp(search(Trie,"this dsad ads"),"-1"));
-      //YOUR CODE HERE//
-
-      //YOUR CODE HERE//
+		strcpy(phrase,"this");
+		insert_ngram(Trie,phrase);
+		CU_ASSERT(0==strcmp(search(Trie,"this"),"this"));
+		strcpy(phrase,"this is");
+		insert_ngram(Trie,phrase);
+		CU_ASSERT(0==strcmp(search(Trie,"this is"),"this|this is"));
+		strcpy(phrase,"this is a dog");
+		insert_ngram(Trie,phrase);
+		CU_ASSERT(0==strcmp(search(Trie,"this is a dog"),"this|this is|this is a dog"));
+		CU_ASSERT(0==strcmp(search(Trie,"this is a cat"),"this|this is"));
+		strcpy(phrase,"this is a cat");
+		insert_ngram(Trie,phrase);
+		CU_ASSERT(0==strcmp(search(Trie,"this is a cat"),"this|this is|this is a cat"));
+		CU_ASSERT(0==strcmp(search(Trie,"is"),"-1"));
+		strcpy(phrase,"is");
+		insert_ngram(Trie,phrase);
+		CU_ASSERT(0==strcmp(search(Trie,"is"),"is"));
+		CU_ASSERT(0==strcmp(search(Trie,"is a cat"),"is"));
+		strcpy(phrase,"is a cat");
+		insert_ngram(Trie,phrase);
+		CU_ASSERT(0==strcmp(search(Trie,"is a cat"),"is|is a cat"));
 	}
 }
 void testDelete(void)
