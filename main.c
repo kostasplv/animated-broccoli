@@ -4,9 +4,8 @@
 #include <string.h>
 #include <time.h>
 
-int main(int argc, char *argv[])
+int main1(int argc, char *argv[])
 {
-	clock_t begin = clock();
 	int j,i;
 	Index *Trie;
 	Trie=init_trie();

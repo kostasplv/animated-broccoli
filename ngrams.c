@@ -63,7 +63,8 @@ int binary_search(char* phrase,trie_node** node,int length)
 }
 int insert_ngram(Index *indx, char *phrase)
 {
-	char *str = strtok(phrase, " ");
+	char *str;
+	str= strtok(phrase," ");
 	int found = -1;
 	found=binary_search(str,indx->root,indx->root_num);
 	if (found == -1)	//den vrethike i leksh sto root//
@@ -355,95 +356,6 @@ int delete_node(trie_node *node,char *phrase)//VOHTHITIKH SYNARTHSH THS delete_n
         return 2;
     }
 }
-/*int delete_node(trie_node *node,char *phrase)
-{
-    int found=-1;
-    char *str=strtok(phrase," ");
-    char *str1=strtok(NULL,"");
-    found=binary_search(str,node->children,node->child_num);
-    if(found==-1)
-    {
-        return 0;
-    }
-    else
-    {
-        if(str1==NULL)
-        {
-            if(node->children[found]->is_final=='Y')
-            {
-                if(node->children[found]->child_num==0)
-                {
-                    free(node->children[found]->word);
-                    node->children[found]->word=NULL;
-					free(node->children[found]->children);
-					node->children[found]->children=NULL;
-                    free(node->children[found]);
-                    node->children[found]=NULL;
-                    int i;
-                    for(i=found+1;i<node->child_num;i++)
-                    {
-                        node->children[i-1]=node->children[i];
-                        node->children[i]=NULL;
-                    }
-                    node->child_num=node->child_num-1;
-                    return 2;
-                }
-                else
-                {
-                    node->children[found]->is_final='N';
-                }
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        else
-        {
-            int chc;
-            chc=delete_node(node->children[found],str1);
-            if(chc==2)
-            {
-                if(node->children[found]->is_final=='N')
-                {
-                    if(node->children[found]->child_num==0)
-                    {
-                        free(node->children[found]->word);
-                        node->children[found]->word=NULL;
-						free(node->children[found]->children);
-						node->children[found]->children=NULL;
-                        free(node->children[found]);
-                        node->children[found]=NULL;
-                        int i;
-                        for(i=found+1;i<node->child_num;i++)
-                        {
-                            node->children[i-1]=node->children[i];
-                            node->children[i]=NULL;
-                        }
-                        node->child_num=node->child_num-1;
-                        return 2;
-                    }
-                    else
-                    {
-                        return 1;
-                    }
-                }
-                else
-                {
-                    return 1;
-                }
-            }
-            else if(chc==1)
-            {
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-    }
-}*/
 char* search(Index* indx,char* phrase)
 {
 	int i,flag=0;
@@ -471,6 +383,19 @@ char* search(Index* indx,char* phrase)
 			rest_phrase = strtok(NULL,"");			//PAIRNOUME THN UPOLOIPH PHRASH//
 			if(rest_phrase==NULL)
 			{
+				if(first_word!=NULL)
+				{
+					found=binary_search(first_word,indx->root,indx->root_num);
+					if(found!=-1)
+					{
+						if(indx->root[found]->is_final=='Y')
+						{
+							string_counter++;
+							result[string_counter]=malloc(strlen(first_word)+1);
+							strcpy(result[string_counter],first_word);
+						}
+					}
+				}
 				free(temp);
 				free(str2);
 				break;

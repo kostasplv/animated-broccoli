@@ -1,12 +1,14 @@
 CC		= gcc
-FLAGS	= -c -g
+FLAGS	= -c -g  
 COMP = -o
-OUT = exe
-IN = main.o ngrams.o
+OUT = ngrams
+IN = main.o ngrams.o unit_testing.o
 
-exe: main.o ngrams.o
-	$(CC) $(COMP) $(OUT) $(IN)
+ngrams: main.o ngrams.o unit_testing.o
+	$(CC) $(COMP) $(OUT) $(IN) -lcunit
 
+unit_testing.o:	unit_testing.c
+	 $(CC) $(FLAGS) unit_testing.c 
 main.o: main.c
 	$(CC) $(FLAGS) main.c
 
