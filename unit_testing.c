@@ -5,8 +5,6 @@
 #include "ngrams.h"
 #include <stdlib.h>
 
-/* Pointer to the file used by the tests. */
-static FILE* temp_file = NULL;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -14,12 +12,8 @@ static FILE* temp_file = NULL;
  */
 int init_suite1(void)
 {
-   if (NULL == (temp_file = fopen("temp.txt", "w+"))) {
-      return -1;
-   }
-   else {
-      return 0;
-   }
+
+   return 0;
 }
 
 /* The suite cleanup function.
@@ -28,27 +22,15 @@ int init_suite1(void)
  */
 int clean_suite1(void)
 {
-   if (0 != fclose(temp_file)) {
-      return -1;
-   }
-   else {
-      temp_file = NULL;
-      return 0;
-   }
+
+   return 0;
 }
 
-/* Simple test of fprintf().
- * Writes test data to the temporary file and checks
- * whether the expected number of bytes were written.
- */
 void testSearch(void)
 {
 	Index *Trie;
 	Trie=init_trie();
 	char *phrase=malloc(100*sizeof(char));
-	if (NULL != temp_file)
-	{
-
 		char* temp=search(Trie,"");
 		CU_ASSERT(0==strcmp(temp,"-1"));
 		temp=search(Trie," ");
@@ -134,24 +116,15 @@ void testSearch(void)
 	   	temp=search(Trie,"this is a this is a");
 	   	CU_ASSERT(0==strcmp(temp,"this|is|a"));
 	   	free(temp);
-   }
    free(phrase);
    delete_trie(&Trie);
 }
 
-/* Simple test of fread().
- * Reads the data previously written by testFPRINTF()
- * and checks whether the expected characters are present.
- * Must be run after testFPRINTF().
- */
 void testInsert(void)
 {
 	Index *Trie;
 	Trie=init_trie();
 	char *phrase=malloc(100*sizeof(char));
-	if (NULL != temp_file)
-	{
-		rewind(temp_file);
 		char* temp=search(Trie,"");
 		CU_ASSERT(0==strcmp(temp,"-1"));
 		temp=search(Trie," ");
@@ -196,7 +169,6 @@ void testInsert(void)
 		temp=search(Trie,"is a cat");
 		CU_ASSERT(0==strcmp(temp,"is|is a cat"));
 		free(temp);
-	}
 	free(phrase);
 	delete_trie(&Trie);
 }
@@ -205,9 +177,6 @@ void testBinary(void)
 	Index* Trie;
 	Trie=init_trie();
 	char *phrase=malloc(100*sizeof(char));
-   if (NULL != temp_file)
-   {
-      rewind(temp_file);
       CU_ASSERT(-1 == binary_search("",Trie->root,Trie->root_num));
       strcpy(phrase,"this");
       insert_ngram(Trie,phrase);
@@ -222,7 +191,6 @@ void testBinary(void)
       CU_ASSERT(-1 != binary_search("this",Trie->root,Trie->root_num));
       CU_ASSERT(-1 != binary_search("a",Trie->root,Trie->root_num));
       CU_ASSERT(-1 == binary_search("this is a",Trie->root,Trie->root_num));
-   }
    free(phrase);
    delete_trie(&Trie);
 }
@@ -244,10 +212,6 @@ void testInsertion(void)
 	Trie=init_trie();
 	char* phrase=malloc(100*sizeof(char));
 	int i;
-
-   if (NULL != temp_file)
-   {
-      rewind(temp_file);
       strcpy(phrase,"this");
       insert_ngram(Trie,phrase);
       CU_ASSERT(1 == test(Trie->root,Trie->root_num));
@@ -262,23 +226,199 @@ void testInsertion(void)
 
       strcpy(phrase,"thit");
       insert_ngram(Trie,phrase);
-   }
    free(phrase);
    delete_trie(&Trie);
 }
 
 void testDelete(void)
 {
-   unsigned char buffer[20];
+    Index *Trie;
+    Trie=init_trie();
+    char *phrase=malloc(100*sizeof(char));
+    char *testit=malloc(100*sizeof(char));
+    char *temp;
+		temp=search(Trie,"");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+		temp=search(Trie," ");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+		temp=search(Trie,"this dsad ads");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+        strcpy(phrase,"this is a cat and a dog and a mouse");
+        insert_ngram(Trie,phrase);
+        strcpy(phrase,"this is a cat and a dog and a");
+        insert_ngram(Trie,phrase);
+        strcpy(phrase,"this is a cat and a dog and");
+        insert_ngram(Trie,phrase);
+        strcpy(phrase,"this is a cat and a dog");
+        insert_ngram(Trie,phrase);
+        strcpy(phrase,"this is a cat and a");
+        insert_ngram(Trie,phrase);
+        strcpy(phrase,"this is a cat and");
+        insert_ngram(Trie,phrase);
+        strcpy(phrase,"this is a cat");
+        insert_ngram(Trie,phrase);
+        strcpy(phrase,"this is a");
+        insert_ngram(Trie,phrase);
+        strcpy(phrase,"this is");
+        insert_ngram(Trie,phrase);
+        strcpy(phrase,"this");
+        insert_ngram(Trie,phrase);
+		temp=search(Trie,"this");
+		CU_ASSERT(0==strcmp(temp,"this"));
+		free(temp);
+        temp=search(Trie,"this is");
+		CU_ASSERT(0==strcmp(temp,"this|this is"));
+		free(temp);
+		temp=search(Trie,"this is a");
+		CU_ASSERT(0==strcmp(temp,"this|this is|this is a"));
+		free(temp);
+		temp=search(Trie,"this is a cat");
+		CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat"));
+		free(temp);
+		temp=search(Trie,"this is a cat and");
+		CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and"));
+		free(temp);
+		temp=search(Trie,"this is a cat and a");
+		CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and|this is a cat and a"));
+		free(temp);
+		temp=search(Trie,"this is a cat and a dog");
+		CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog"));
+		free(temp);
+		temp=search(Trie,"this is a cat and a dog and");
+		CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and"));
+		free(temp);
+		temp=search(Trie,"this is a cat and a dog and a");
+		CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a"));
+		free(temp);
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"this|this is|this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
+		free(temp);
+        strcpy(testit,"this");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"this is|this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
+		free(temp);
+		CU_ASSERT(0==delete_ngram(Trie,testit));
+		temp=search(Trie,"this");
+		CU_ASSERT(0==strcmp(temp,"-1"));
 
-   if (NULL != temp_file)
-   {
-      rewind(temp_file);
-      //YOUR CODE HERE//
-     // CU_ASSERT(9 == fread(buffer, sizeof(unsigned char), 20, temp_file));		//SVISTA AUTA//
-     // CU_ASSERT(0 == strncmp(buffer, "Q\ni1 = 10", 9));							//SVISTA AUTA//
-      //YOUR CODE HERE//
-   }
+        strcpy(testit,"this is");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"this is a|this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
+		free(temp);
+		CU_ASSERT(0==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+        strcpy(testit,"this is a");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"this is a cat|this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
+		free(temp);
+		CU_ASSERT(0==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+        strcpy(testit,"this is a cat");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"this is a cat and|this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
+		free(temp);
+		CU_ASSERT(0==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+        strcpy(testit,"this is a cat and");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"this is a cat and a|this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
+		free(temp);
+		CU_ASSERT(0==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+        strcpy(testit,"this is a cat and a");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"this is a cat and a dog|this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
+		free(temp);
+		CU_ASSERT(0==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+        strcpy(testit,"this is a cat and a dog");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"this is a cat and a dog and|this is a cat and a dog and a|this is a cat and a dog and a mouse"));
+		free(temp);
+		CU_ASSERT(0==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+        strcpy(testit,"this is a cat and a dog and");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"this is a cat and a dog and a|this is a cat and a dog and a mouse"));
+		free(temp);
+		CU_ASSERT(0==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+        strcpy(testit,"this is a cat and a dog and a");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"this is a cat and a dog and a mouse"));
+		free(temp);
+		CU_ASSERT(0==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+        strcpy(testit,"this is a cat and a dog and a mouse");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+		CU_ASSERT(0==delete_ngram(Trie,testit));
+		temp=search(Trie,"this is a cat and a dog and a mouse");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+
+        strcpy(phrase,"league of legends world championship");
+        insert_ngram(Trie,phrase);
+        strcpy(phrase,"league of legends");
+        insert_ngram(Trie,phrase);
+		temp=search(Trie,"league of legends world championship");
+		CU_ASSERT(0==strcmp(temp,"league of legends|league of legends world championship"));
+		free(temp);
+        strcpy(testit,"league of legends world championship");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"league of legends world championship");
+		CU_ASSERT(0==strcmp(temp,"league of legends"));
+		free(temp);
+		CU_ASSERT(0==delete_ngram(Trie,testit));
+        strcpy(phrase,"overwatch pro league");
+        insert_ngram(Trie,phrase);
+        strcpy(phrase,"overwatch");
+        insert_ngram(Trie,phrase);
+        temp=search(Trie,"league of legends");
+        CU_ASSERT(0==strcmp(temp,"league of legends"));
+        free(temp);
+        temp=search(Trie,"overwatch");
+        CU_ASSERT(0==strcmp(temp,"overwatch"));
+        free(temp);
+        temp=search(Trie,"overwatch pro league");
+        CU_ASSERT(0==strcmp(temp,"overwatch|overwatch pro league"));
+        free(temp);
+        strcpy(testit,"overwatch pro league");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"overwatch pro league");
+		CU_ASSERT(0==strcmp(temp,"overwatch"));
+		free(temp);
+        strcpy(testit,"overwatch");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"overwatch");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+        temp=search(Trie,"league of legends");
+        CU_ASSERT(0==strcmp(temp,"league of legends"));
+        free(temp);
+        strcpy(testit,"league of legends");
+        CU_ASSERT(1==delete_ngram(Trie,testit));
+		temp=search(Trie,"league of legends");
+		CU_ASSERT(0==strcmp(temp,"-1"));
+    free(testit);
+    free(phrase);
+    delete_trie(&Trie);
 }
 
 /* The main() function for setting up and running the tests.
@@ -318,4 +458,3 @@ int main()
    CU_cleanup_registry();
    return CU_get_error();
 }
-
